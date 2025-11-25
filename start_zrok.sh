@@ -30,11 +30,15 @@ zrok enable "$ZROK_TOKEN" || {
     exit 1
 }
 
-# 创建或确认已存在 reserved share
-echo "Reserving share (or checking existing) with name/token: $RESERVED_NAME ..."
-zrok reserve private localhost:22 --backend-mode tcpTunnel --unique-name "$RESERVED_NAME" || {
-    echo "Failed to reserve share (might already exist). Trying to continue..."
-}
-
-echo "Starting reserved zrok share in headless mode..."
-zrok share reserved "$RESERVED_NAME" --headless --backend-mode tcpTunnel localhost:22
+# 创建 reserved share
+if [ -n "$RESERVED_NAME" ]; then
+    echo "Reserving share with name/token: $RESERVED_NAME ..."
+    zrok reserve private localhost:22 --backend-mode tcpTunnel --unique-name "$RESERVED_NAME" || {
+        echo "Failed to reserve share (might already exist). Trying to continue..."
+    }
+    echo "Starting reserved zrok share in headless mode..."
+    zrok share reserved "$RESERVED_NAME" --headless --backend-mode tcpTunnel localhost:22
+else
+    echo "Starting temporary zrok share in headless mode..."
+    zrok share private --headless --backend-mode tcpTunnel localhost:22
+fi
