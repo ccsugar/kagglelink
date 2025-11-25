@@ -2,12 +2,13 @@
 
 set -e
 
-if [ "$#" -ne 1 ]; then
-    echo "Usage: ./start_zrok.sh <zrok_token>"
+if [ "$#" -ne 2 ]; then
+    echo "Usage: ./start_zrok.sh <zrok_token> <reserved_name_or_token>"
     exit 1
 fi
 
 ZROK_TOKEN=$1
+RESERVED_NAME=$2
 
 cleanup() {
     echo "Disabling zrok environment..."
@@ -15,7 +16,6 @@ cleanup() {
     echo "Cleanup complete."
 }
 
-# trap the exit signal to run the cleanup function
 trap cleanup EXIT
 
 echo "Starting zrok service..."
@@ -30,7 +30,11 @@ zrok enable "$ZROK_TOKEN" || {
     exit 1
 }
 
-echo "Starting zrok share in headless mode..."
-echo "Starting zrok share now..."
-zrok share private --headless --backend-mode tcpTunnel localhost:22
+# 创建或确认已存在 reserved share
+echo "Reserving share (or checking existing) with name/token: $RESERVED_NAME ..."
+zrok reserve private localhost:22 --backend-mode tcpTunnel --unique-name "$RESERVED_NAME" || {
+    echo "Failed to reserve share (might already exist). Trying to continue..."
+}
 
+echo "Starting reserved zrok share in headless mode..."
+zrok share reserved "$RESERVED_NAME" --headless --backend-mode tcpTunnel localhost:22
