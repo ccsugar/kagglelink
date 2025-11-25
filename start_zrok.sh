@@ -2,13 +2,16 @@
 
 set -e
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: ./start_zrok.sh <zrok_token> <reserved_name_or_token>"
+if [ "$#" -eq 1 ]; then
+    ZROK_TOKEN=$1
+    RESERVED_NAME=""
+elif [ "$#" -eq 2 ]; then
+    ZROK_TOKEN=$1
+    RESERVED_NAME=$2
+else
+    echo "Usage: ./start_zrok.sh <zrok_token> [reserved_name_or_token]"
     exit 1
 fi
-
-ZROK_TOKEN=$1
-RESERVED_NAME=$2
 
 cleanup() {
     echo "Disabling zrok environment..."
