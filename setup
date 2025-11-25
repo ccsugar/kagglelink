@@ -8,7 +8,7 @@ echo "For more information check out: https://github.com/bhdai/kagglelink"
 echo "===================================="
 
 # Default repository URL and branch
-REPO_URL="https://github.com/bhdai/kagglelink.git"
+REPO_URL="https://github.com/ccsugar/kagglelink.git"
 INSTALL_DIR="/tmp/kagglelink"
 
 # Function to display usage information
