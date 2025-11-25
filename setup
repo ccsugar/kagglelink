@@ -13,12 +13,13 @@ INSTALL_DIR="/tmp/kagglelink"
 
 # Function to display usage information
 usage() {
-    echo "Usage: curl -sS https://bhdai.github.io/setup.sh | bash -s -- -k <your_public_key_url> -t <your_zrok_token>"
+    echo "Usage: curl -sS https://bhdai.github.io/setup.sh | bash -s -- -k <your_public_key_url> -t <your_zrok_token> [-r <reserved_name>]"
     echo ""
     echo "Options:"
-    echo "  -k, --keys-url URL    URL to your authorized_keys file"
-    echo "  -t, --token TOKEN     Your zrok token"
-    echo "  -h, --help            Display this help message"
+    echo "  -k, --keys-url URL      URL to your authorized_keys file"
+    echo "  -t, --token TOKEN       Your zrok token"
+    echo "  -r, --reserved-name     (Optional) Reserved share unique name (lowercase alphanumeric, 4‑32 chars)"
+    echo "  -h, --help              Display this help message"
     exit 1
 }
 
@@ -31,6 +32,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -t|--token)
             ZROK_TOKEN="$2"
+            shift 2
+            ;;
+        -r|--reserved-name)
+            RESERVED_NAME="$2"
             shift 2
             ;;
         -h|--help)
@@ -71,8 +76,13 @@ chmod +x setup_kaggle_zrok.sh start_zrok.sh
 echo "⏳ Setting up SSH with your public keys..."
 ./setup_kaggle_zrok.sh "$AUTH_KEYS_URL"
 
-echo "⏳ Starting zrok service with your token..."
-./start_zrok.sh "$ZROK_TOKEN"
+if [ -n "$RESERVED_NAME" ]; then
+    echo "⏳ Starting zrok service with reserved share name: $RESERVED_NAME"
+    ./start_zrok.sh "$ZROK_TOKEN" "$RESERVED_NAME"
+else
+    echo "⏳ Starting zrok service"
+    ./start_zrok.sh "$ZROK_TOKEN"
+fi
 
 echo "✅ Setup complete!"
 echo "✅ You should now be able to connect to your Kaggle instance via SSH."
