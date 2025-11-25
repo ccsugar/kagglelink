@@ -40,7 +40,7 @@ if [ -n "$RESERVED_NAME" ]; then
         echo "Failed to reserve share (might already exist). Trying to continue..."
     }
     echo "Starting reserved zrok share in headless mode..."
-    zrok share reserved "$RESERVED_NAME" --headless --backend-mode tcpTunnel localhost:22
+    zrok share reserved "$RESERVED_NAME" --headless
 else
     echo "Starting temporary zrok share in headless mode..."
     zrok share private --headless --backend-mode tcpTunnel localhost:22
